@@ -2,8 +2,23 @@
 
 // class _TimeDevice
 
-_TimeDevice::_TimeDevice() {
-    running = false;
+_TimeDevice::_TimeDevice():
+running(false) {
+
+}
+
+_TimeDevice::_TimeDevice(_TimeDevice&& td):
+running(false), timeThread(std::move(td.timeThread)) {
+
+}
+
+_TimeDevice& _TimeDevice::operator=(_TimeDevice&& td) {
+    if (running)
+        stop();
+    if (timeThread.joinable())
+        timeThread.join();
+    timeThread = std::move(td.timeThread);
+    return *this;
 }
 
 _TimeDevice::~_TimeDevice() {

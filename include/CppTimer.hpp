@@ -32,6 +32,16 @@ public:
     /** Constructor. */
     _TimeDevice();
 
+    /** Disable copy constructor. */
+    _TimeDevice(const _TimeDevice&) = delete;
+    /** Disable copy assignment operator. */
+    _TimeDevice& operator=(const _TimeDevice&) = delete;
+
+    /** Move constructor. */
+    _TimeDevice(_TimeDevice&& td);
+    /** Move assignment operator. */
+    _TimeDevice& operator=(_TimeDevice&& td);
+
     /** Destructor.
      * Stops the clock if currently running.
      */
