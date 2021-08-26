@@ -3,6 +3,7 @@
 
 #include <chrono>
 #include <thread>
+#include <variant>
 
 /** Callback class used to define action taken on a @ref _Clock tick. */
 class ClockCallback {
@@ -23,12 +24,6 @@ public:
 /** Time device class for timing system. */
 class _TimeDevice {
 public:
-    /** Clock type to use. */
-    typedef std::chrono::steady_clock Clock_t;
-
-    /** Duration type to use for internal mechanics. */
-    typedef std::chrono::microseconds Time_t;
-
     /** Constructor. */
     _TimeDevice();
 
@@ -48,29 +43,43 @@ public:
     ~_TimeDevice();
 
     /** Starts the clock with the given period.
-     * Converts the period to std::chrono::microseconds, then calls @ref start_us.
-     * @param period Tick period as a std::chrono::duration.
+     * @param period Tick period as a std::chrono::duration<>, e.g. std::chrono::milliseconds.
      * @param callback A @ref ClockCallback object to be used on tick events.
      * @note The internal timing system uses microseconds (us), so nanosecond
      * precision is not yet supported.
      */
     template<class R, class P>
     void start(std::chrono::duration<R, P> period, ClockCallback& callback) {
-        start_us(std::chrono::duration_cast<Time_t>(period), callback);
+        this->period = std::chrono::duration_cast<duration_t>(period);
+        this->callback = &callback;
+        _start();
     }
 
     /** Starts the clock with the given period.
-     * @param period Tick period in std::chrono::microsecond units.
-     * @param callback A @ref ClockCallback object to be used on tick events.
+     * @param period Tick period as a std::chrono::duration<>, e.g. std::chrono::milliseconds.
+     * @param callback A std::function<void()> to be called on tick events.
+     * @note The internal timing system uses microseconds (us), so nanosecond
+     * precision is not yet supported.
      */
-    void start_us(Time_t period, ClockCallback& callback);
+    template<class R, class P>
+    void start(std::chrono::duration<R, P> period, std::function<void()> callback) {
+        this->period = std::chrono::duration_cast<duration_t>(period);
+        this->callback = callback;
+        _start();
+    }
 
     /** Stops the clock.
-     * Can be restarted with @ref start_ms or @ref start_us.
+     * Can be restarted with @ref start.
      */
     void stop();
 
 protected:
+    /** Clock type to use. */
+    typedef std::chrono::steady_clock Clock_t;
+
+    /** Duration type to use for internal mechanics. */
+    typedef std::chrono::nanoseconds duration_t;
+
     /** Determines . */
     virtual void onTick() = 0;
 
@@ -87,6 +96,9 @@ protected:
     bool running;
 
 private:
+    /** Starts the clock. */
+    void _start();
+
     /** Method given to the timing thread.
      * Measures the current time to see if the @ref period has passed. If it
      * has, calls the @ref ClockCallback method @ref onTick.
@@ -100,10 +112,10 @@ private:
     void tickEvent();
 
     /** Time period to measure for in @ref run. */
-    Time_t period;
+    duration_t period;
 
-    /** Pointer to the callback object to use. */
-    ClockCallback* callback;
+    /** Variant storing the callback object to use. */
+    std::variant<ClockCallback*, std::function<void()>> callback;
 };
 
 

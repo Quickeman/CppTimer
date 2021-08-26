@@ -9,7 +9,7 @@ string(TOLOWER ${PROJECT_NAME} LIB_NAME)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Request C++11 standard features
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 # Tell the compiler to optimise heavily
 add_compile_options(-O2)

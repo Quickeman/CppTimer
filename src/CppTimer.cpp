@@ -28,28 +28,25 @@ _TimeDevice::~_TimeDevice() {
         timeThread.join();
 }
 
-void _TimeDevice::start_us(Time_t period, ClockCallback& callback) {
-    startTime = clock.now();
+void _TimeDevice::stop() {
+    running = false;
+}
 
-    this->period = period;
-    this->callback = &callback;
+void _TimeDevice::_start() {
+    startTime = clock.now();
 
     running = true;
 
     timeThread = std::thread(_TimeDevice::run, this);
 }
 
-void _TimeDevice::stop() {
-    running = false;
-}
-
 void _TimeDevice::run(_TimeDevice* self) {
     Clock_t::time_point currTime;
-    Time_t elapsed;
+    duration_t elapsed;
 
     while (self->running) {
         currTime = self->clock.now();
-        elapsed = std::chrono::duration_cast<Time_t>(currTime - self->startTime);
+        elapsed = std::chrono::duration_cast<duration_t>(currTime - self->startTime);
 
         if (elapsed >= self->period) {
             self->tickEvent();
@@ -58,7 +55,12 @@ void _TimeDevice::run(_TimeDevice* self) {
 }
 
 void _TimeDevice::tickEvent() {
-    callback->onTick();
+    if (std::holds_alternative<ClockCallback*>(callback)) {
+        std::get<ClockCallback*>(callback)->onTick();
+    }
+    else if (std::holds_alternative<std::function<void()>>(callback)) {
+        std::get<std::function<void()>>(callback)();
+    }
     onTick();
 }
 
