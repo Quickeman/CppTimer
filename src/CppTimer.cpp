@@ -1,52 +1,54 @@
 #include "CppTimer.hpp"
 
-// class _TimeDevice
+using namespace std;
 
-_TimeDevice::_TimeDevice():
+// class _EventTriggerDevice
+
+_EventTriggerDevice::_EventTriggerDevice():
 running(false) {
 
 }
 
-_TimeDevice::_TimeDevice(_TimeDevice&& td):
-running(false), timeThread(std::move(td.timeThread)) {
+_EventTriggerDevice::_EventTriggerDevice(_EventTriggerDevice&& td):
+running(false), timeThread(move(td.timeThread)) {
 
 }
 
-_TimeDevice& _TimeDevice::operator=(_TimeDevice&& td) {
+_EventTriggerDevice& _EventTriggerDevice::operator=(_EventTriggerDevice&& td) {
     if (running)
         stop();
     if (timeThread.joinable())
         timeThread.join();
-    timeThread = std::move(td.timeThread);
+    timeThread = move(td.timeThread);
     return *this;
 }
 
-_TimeDevice::~_TimeDevice() {
+_EventTriggerDevice::~_EventTriggerDevice() {
     if (running)
         stop();
     if (timeThread.joinable())
         timeThread.join();
 }
 
-void _TimeDevice::stop() {
+void _EventTriggerDevice::stop() {
     running = false;
 }
 
-void _TimeDevice::_start() {
+void _EventTriggerDevice::_start() {
     startTime = clock.now();
 
     running = true;
 
-    timeThread = std::thread(_TimeDevice::run, this);
+    timeThread = thread(_EventTriggerDevice::run, this);
 }
 
-void _TimeDevice::run(_TimeDevice* self) {
+void _EventTriggerDevice::run(_EventTriggerDevice* self) {
     Clock_t::time_point currTime;
     duration_t elapsed;
 
     while (self->running) {
         currTime = self->clock.now();
-        elapsed = std::chrono::duration_cast<duration_t>(currTime - self->startTime);
+        elapsed = chrono::duration_cast<duration_t>(currTime - self->startTime);
 
         if (elapsed >= self->period) {
             self->tickEvent();
@@ -54,12 +56,12 @@ void _TimeDevice::run(_TimeDevice* self) {
     }
 }
 
-void _TimeDevice::tickEvent() {
-    if (std::holds_alternative<ClockCallback*>(callback)) {
-        std::get<ClockCallback*>(callback)->onTick();
+void _EventTriggerDevice::tickEvent() {
+    if (holds_alternative<ClockCallback*>(callback)) {
+        get<ClockCallback*>(callback)->onTick();
     }
-    else if (std::holds_alternative<std::function<void()>>(callback)) {
-        std::get<std::function<void()>>(callback)();
+    else if (holds_alternative<function<void()>>(callback)) {
+        get<function<void()>>(callback)();
     }
     onTick();
 }
