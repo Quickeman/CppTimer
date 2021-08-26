@@ -45,8 +45,6 @@ public:
     /** Starts the clock with the given period.
      * @param period Tick period as a std::chrono::duration<>, e.g. std::chrono::milliseconds.
      * @param callback A @ref ClockCallback object to be used on tick events.
-     * @note The internal timing system uses microseconds (us), so nanosecond
-     * precision is not yet supported.
      */
     template<class R, class P>
     void start(std::chrono::duration<R, P> period, ClockCallback& callback) {
@@ -58,8 +56,6 @@ public:
     /** Starts the clock with the given period.
      * @param period Tick period as a std::chrono::duration<>, e.g. std::chrono::milliseconds.
      * @param callback A std::function<void()> to be called on tick events.
-     * @note The internal timing system uses microseconds (us), so nanosecond
-     * precision is not yet supported.
      */
     template<class R, class P>
     void start(std::chrono::duration<R, P> period, std::function<void()> callback) {
