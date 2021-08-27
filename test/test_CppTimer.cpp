@@ -22,7 +22,7 @@ int main() {
     Clock clock;
     Timer timer;
 
-    vector<milliseconds> swt{milliseconds(10), milliseconds(20)};
+    vector<intmax_t> swt{10, 20};
     int clk_count = 0;
     TestCallback timer_cb;
 
@@ -31,13 +31,16 @@ int main() {
     test::check(timer_cb.count, 0);
 
     swatch.start();
-    test::check(swatch.elapsed() == milliseconds(0), "Stopwatch, just started");
-    std::this_thread::sleep_for(swt[0]);
+    // Compare as ints
+    test::check(swatch.elapsed(), intmax_t(0));
+    std::this_thread::sleep_for(milliseconds(swt[0]));
     swatch.record();
-    test::check(swatch.elapsed() >= swt[0], "Stopwatch, after 10ms");
-    std::this_thread::sleep_for(swt[1]);
+    // Use duration<>.count() method to compare as ints
+    test::check(swatch.elapsed() >= swt[0]);
+    std::this_thread::sleep_for(milliseconds(swt[1]));
     swatch.record();
-    test::check(swatch.elapsed() >= (swt[0] + swt[1]), "Stopwatch, after 30ms");
+    // Compare duration<> objects directly
+    test::check(swatch.elapsed_dur() >= milliseconds(swt[0] + swt[1]), "Stopwatch, after 30ms");
     auto v = swatch.retrieve();
     test::check(v[0] >= swt[0], "Stopwatch, comparing records");
     test::check(v[1] >= (swt[0] + swt[1]), "Stopwatch, comparing records");
