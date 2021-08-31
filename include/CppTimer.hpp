@@ -5,6 +5,7 @@
 #include <thread>
 #include <variant>
 #include <vector>
+#include <functional>
 
 /** Callback class used to define action taken on a clock tick. */
 class ClockCallback {
