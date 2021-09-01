@@ -23,6 +23,12 @@ file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 # Make library
 add_library(${LIB_NAME} ${SRC_FILES})
 
+# Link pthread
+target_link_libraries(
+    ${LIB_NAME}
+    pthread
+)
+
 # Include the `include` directory
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
