@@ -37,6 +37,10 @@ void _EventTriggerDevice::stop() {
 void _EventTriggerDevice::_start() {
     startTime = clock.now();
 
+    if (timeThread.joinable()) {
+        running = false;
+        timeThread.join();
+    }
     running = true;
 
     timeThread = thread(_EventTriggerDevice::run, this);
