@@ -44,24 +44,24 @@ void _EventTriggerDevice::_start() {
     }
     running = true;
 
-    timeThread = thread(_EventTriggerDevice::run, this);
+    timeThread = thread([this]() { this->run(); });
 }
 
-void _EventTriggerDevice::run(_EventTriggerDevice* self) {
+void _EventTriggerDevice::run() {
     Clock_t::time_point currTime;
     duration_t elapsed;
 
-    while (self->running) {
-        currTime = self->clock.now();
+    while (running) {
+        currTime = clock.now();
 
-        self->startTimeMutex.lock();
-        auto st = self->startTime;
-        self->startTimeMutex.unlock();
+        startTimeMutex.lock();
+        auto st = startTime;
+        startTimeMutex.unlock();
 
         elapsed = chrono::duration_cast<duration_t>(currTime - st);
 
-        if (elapsed >= self->period) {
-            self->tickEvent();
+        if (elapsed >= period) {
+            tickEvent();
         }
     }
 }

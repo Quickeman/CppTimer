@@ -179,7 +179,7 @@ private:
      * has, calls the @ref ClockCallback method @ref onTick.
      * @param self Reference to `this`.
      */
-    static void run(_EventTriggerDevice* self);
+    void run();
 
     /** Method called by @ref run when @ref period has passed.
      * Calls @ref ClockCallback::onTick, then @ref onTick.
