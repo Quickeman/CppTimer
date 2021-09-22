@@ -4,14 +4,13 @@ using namespace std;
 
 // class _EventTriggerDevice
 
-_EventTriggerDevice::_EventTriggerDevice():
-running(false) {
-
+_EventTriggerDevice::_EventTriggerDevice() {
+    running = false;
 }
 
 _EventTriggerDevice::_EventTriggerDevice(_EventTriggerDevice&& td):
-running(false), timeThread(move(td.timeThread)) {
-
+timeThread(move(td.timeThread)) {
+    running = false;
 }
 
 _EventTriggerDevice& _EventTriggerDevice::operator=(_EventTriggerDevice&& td) {
@@ -35,7 +34,9 @@ void _EventTriggerDevice::stop() {
 }
 
 void _EventTriggerDevice::_start() {
+    startTimeMutex.lock();
     startTime = clock.now();
+    startTimeMutex.unlock();
 
     if (timeThread.joinable()) {
         running = false;
@@ -52,7 +53,12 @@ void _EventTriggerDevice::run(_EventTriggerDevice* self) {
 
     while (self->running) {
         currTime = self->clock.now();
-        elapsed = chrono::duration_cast<duration_t>(currTime - self->startTime);
+
+        self->startTimeMutex.lock();
+        auto st = self->startTime;
+        self->startTimeMutex.unlock();
+
+        elapsed = chrono::duration_cast<duration_t>(currTime - st);
 
         if (elapsed >= self->period) {
             self->tickEvent();
@@ -74,6 +80,7 @@ void _EventTriggerDevice::tickEvent() {
 // class Clock
 
 void Clock::onTick() {
+    lock_guard<mutex> lg(startTimeMutex);
     startTime = clock.now();
 }
 

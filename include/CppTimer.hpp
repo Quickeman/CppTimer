@@ -3,6 +3,8 @@
 
 #include <chrono>
 #include <thread>
+#include <atomic>
+#include <mutex>
 #include <variant>
 #include <vector>
 #include <functional>
@@ -162,8 +164,11 @@ protected:
     /** Thread of execution to measure elapsed time. */
     std::thread timeThread;
 
+    /** Mutex to prevent data races on the start time. */
+    std::mutex startTimeMutex;
+
     /** Clock running flag. */
-    bool running;
+    std::atomic_bool running;
 
 private:
     /** Starts the clock. */
