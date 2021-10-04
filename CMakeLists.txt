@@ -11,9 +11,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Request C++11 standard features
 set(CMAKE_CXX_STANDARD 17)
 
-# Tell the compiler to optimise heavily
-add_compile_options(-O2)
-
 
 ### SOURCE CODE ###
 
@@ -40,6 +37,9 @@ set_target_properties(${LIB_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_
 
 # Make PIC
 set_target_properties(${LIB_NAME} PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+
+# Add comiler flags
+target_compile_options(${LIB_NAME} PRIVATE -O2 -Wall -pedantic)
 
 
 ### UNIT TESTING ###
