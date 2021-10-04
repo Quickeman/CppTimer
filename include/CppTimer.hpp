@@ -18,8 +18,7 @@ public:
     ~ClockCallback() = default;
 
     /** Method called on each clock tick.
-     * Override to add functionality.
-     */
+     * Override to add functionality. */
     virtual void onTick() = 0;
 };
 
@@ -108,8 +107,7 @@ typedef Stopwatch<std::chrono::hours>           Stopwatch_h;
 
 
 /** Trigger device.
- * Time-based event triggering class.
- */
+ * Time-based event triggering class. */
 class _EventTriggerDevice : public _TimeDevice {
 public:
     /** Constructor. */

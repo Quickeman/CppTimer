@@ -4,14 +4,12 @@ using namespace std;
 
 // class _EventTriggerDevice
 
-_EventTriggerDevice::_EventTriggerDevice() {
-    running = false;
-}
+_EventTriggerDevice::_EventTriggerDevice():
+running{false} {}
 
 _EventTriggerDevice::_EventTriggerDevice(_EventTriggerDevice&& td):
-timeThread(move(td.timeThread)) {
-    running = false;
-}
+timeThread{move(td.timeThread)},
+running{false} {}
 
 _EventTriggerDevice& _EventTriggerDevice::operator=(_EventTriggerDevice&& td) {
     if (running)
