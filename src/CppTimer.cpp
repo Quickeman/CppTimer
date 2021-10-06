@@ -46,19 +46,10 @@ void _EventTriggerDevice::_start() {
 }
 
 void _EventTriggerDevice::run() {
-    Clock_t::time_point currTime;
-    duration_t elapsed;
-
     while (running) {
-        currTime = clock.now();
-
-        startTimeMutex.lock();
-        auto st = startTime;
-        startTimeMutex.unlock();
-
-        elapsed = chrono::duration_cast<duration_t>(currTime - st);
-
-        if (elapsed >= period) {
+        lock_guard<mutex> lg(startTimeMutex);
+        if (chrono::duration_cast<duration_t>(clock.now() - startTime) >= period) {
+            lg.~lock_guard();
             tickEvent();
         }
     }
