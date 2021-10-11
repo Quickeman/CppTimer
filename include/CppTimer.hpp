@@ -70,13 +70,13 @@ public:
 
     /** @return time since construction or the last call to @ref start, 
      * as the std::chrono::duration type @ref TimeUnit. */
-    inline TimeUnit elapsed_dur() {
+    inline TimeUnit elapsed_dur() const {
         return std::chrono::duration_cast<TimeUnit>(clock.now() - startTime);
     }
 
     /** @return time since construction or the last call to @ref start, 
      * as a number. */
-    inline intmax_t elapsed() {
+    inline intmax_t elapsed() const {
         return elapsed_dur().count();
     }
 
@@ -88,7 +88,7 @@ public:
     }
 
     /** Retrieves the times recorded with @ref record. */
-    inline std::vector<intmax_t>& retrieve() {
+    inline std::vector<intmax_t>& retrieve() const {
         return times;
     }
 
