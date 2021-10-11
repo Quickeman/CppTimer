@@ -88,7 +88,7 @@ public:
     }
 
     /** Retrieves the times recorded with @ref record. */
-    inline std::vector<intmax_t>& retrieve() const {
+    inline const std::vector<intmax_t>& retrieve() const {
         return times;
     }
 
