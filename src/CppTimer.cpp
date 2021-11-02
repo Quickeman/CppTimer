@@ -47,9 +47,11 @@ void _EventTriggerDevice::_start() {
 
 void _EventTriggerDevice::run() {
     while (running) {
-        lock_guard<mutex> lg(startTimeMutex);
-        if (chrono::duration_cast<duration_t>(clock.now() - startTime) >= period) {
-            lg.~lock_guard();
+        startTimeMutex.lock();
+        auto st = startTime;
+        startTimeMutex.unlock();
+
+        if (chrono::duration_cast<duration_t>(clock.now() - st) >= period) {
             tickEvent();
         }
     }
