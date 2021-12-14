@@ -5,7 +5,9 @@ using namespace std;
 // class _EventTriggerDevice
 
 _EventTriggerDevice::_EventTriggerDevice():
-running{false} {}
+running{false} {
+    set_minimum_period(std::chrono::microseconds(100));
+}
 
 _EventTriggerDevice::_EventTriggerDevice(_EventTriggerDevice&& td):
 timeThread{move(td.timeThread)},
@@ -54,6 +56,8 @@ void _EventTriggerDevice::run() {
         if (chrono::duration_cast<duration_t>(clock.now() - st) >= period) {
             tickEvent();
         }
+
+        this_thread::sleep_for(minPeriod);
     }
 }
 

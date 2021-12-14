@@ -155,6 +155,17 @@ public:
      */
     void stop();
 
+    /** Sets the minimum usable period of the clock.
+     * To prevent CPU choking, std::this_thread::sleep_for is used to releive
+     * pressure from the timing thread.
+     * Longer durations will result in lower accuracy but decreased CPU load,
+     * shorter durations (including zero) will result in higher precision at the
+     * cost of increased CPU load, or even choking. */
+    template<class R, class P>
+    void set_minimum_period(std::chrono::duration<R, P> period) {
+        minPeriod = std::chrono::duration_cast<duration_t>(period);
+    }
+
 protected:
     /** Determines internal actions that should be performed on each tick. */
     virtual void onTick() = 0;
@@ -186,6 +197,9 @@ private:
 
     /** Time period to measure for in @ref run. */
     duration_t period;
+
+    /** Duration to sleep the thread for when the clock is running. */
+    duration_t minPeriod;
 
     /** Variant storing the callback object to use. */
     std::variant<ClockCallback*, std::function<void()>> callback;
